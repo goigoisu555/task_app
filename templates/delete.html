@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}削除確認{% endblock %}
+
+{% block content %}
+<h1>削除確認</h1>
+
+<p>以下のタスクを本当に削除しますか？</p>
+
+<p><strong>{{ task.title }}</strong></p>
+
+{% if task.deadline %}
+    <p>期限：{{ task.deadline.strftime("%Y-%m-%d") }}</p>
+{% endif %}
+
+<p>優先度：
+    {% if task.priority == 1 %}高
+    {% elif task.priority == 2 %}中
+    {% else %}低
+    {% endif %}
+</p>
+
+<form action="{{ url_for('delete', task_id=task.id) }}" method="POST" style="margin-top:20px;">
+    <button class="btn btn-delete">削除する</button>
+</form>
+
+<a href="{{ url_for('index') }}" style="display:inline-block; margin-top:10px;">
+    ← 戻る
+</a>
+
+{% endblock %}

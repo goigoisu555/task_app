@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}タスク一覧{% endblock %}
+
+{% block content %}
+
+<h1>タスク一覧</h1>
+
+<form action="{{ url_for('search') }}" method="GET" style="margin-bottom: 20px;">
+    <input type="text" name="q" placeholder="タイトルで検索"
+           value="{{ keyword if keyword else '' }}"
+           style="padding: 5px; width: 200px;">
+    <button type="submit">検索</button>
+</form>
+
+{% if keyword %}
+    <p>「{{ keyword }}」の検索結果</p>
+    <a href="{{ url_for('index') }}">← 全タスク一覧に戻る</a>
+{% endif %}
+
+{% if keyword and tasks|length == 0 %}
+    <p>該当するタスクはありませんでした。</p>
+{% endif %}
+
+<a href="{{ url_for('create') }}">＋ 新規タスク作成</a>
+
+<ul>
+    {% for task in tasks %}
+        <li>
+
+            <span class="{% if task.is_done %}done{% endif %}">
+                {{ task.highlighted_title }}
+            </span>
+
+            （優先度:
+            {% if task.priority == 1 %}高
+            {% elif task.priority == 2 %}中
+            {% else %}低
+            {% endif %}
+            ）
+
+            {% if task.deadline %}
+                - {{ task.deadline.strftime("%Y-%m-%d") }}
+            {% endif %}
+
+            {% if task.is_overdue() %}
+                <span class="overdue">【期限切れ】</span>
+            {% endif %}
+
+            <div style="margin-top:5px;">
+
+                <form action="{{ url_for('toggle', task_id=task.id) }}" method="POST" style="display:inline;">
+                    <button class="btn btn-toggle">
+                        {% if task.is_done %}未完了{% else %}完了{% endif %}
+                    </button>
+                </form>
+
+                <a href="{{ url_for('edit', task_id=task.id) }}" class="btn btn-edit">編集</a>
+
+                <a href="{{ url_for('delete_confirm', task_id=task.id) }}" class="btn btn-delete">削除</a>
+
+            </div>
+
+        </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

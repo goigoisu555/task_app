@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}タスク編集{% endblock %}
+
+{% block content %}
+<h1>タスク編集</h1>
+
+<form action="{{ url_for('edit', task_id=task.id) }}" method="POST">
+
+    <label>タイトル：</label><br>
+    <input type="text" name="title" value="{{ task.title }}" required><br>
+
+    <label>期限：</label><br>
+    <input type="date" name="deadline"
+           value="{{ task.deadline.strftime('%Y-%m-%d') if task.deadline else '' }}"><br>
+
+    <label>優先度：</label><br>
+    <select name="priority">
+        <option value="1" {% if task.priority == 1 %}selected{% endif %}>高</option>
+        <option value="2" {% if task.priority == 2 %}selected{% endif %}>中</option>
+        <option value="3" {% if task.priority == 3 %}selected{% endif %}>低</option>
+    </select><br>
+
+    <button type="submit">更新</button>
+</form>
+
+<a href="{{ url_for('index') }}">← タスク一覧に戻る</a>
+{% endblock %}
+

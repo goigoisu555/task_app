@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}新規タスク作成{% endblock %}
+
+{% block content %}
+<h1>新規タスク作成</h1>
+
+<form action="{{ url_for('create') }}" method="POST">
+
+    <label>タイトル：</label><br>
+    <input type="text" name="title" required><br>
+
+    <label>期限：</label><br>
+    <input type="date" name="deadline"><br>
+
+    <label>優先度：</label><br>
+    <select name="priority">
+        <option value="1">高</option>
+        <option value="2" selected>中</option>
+        <option value="3">低</option>
+    </select><br>
+
+    <button type="submit">作成</button>
+</form>
+
+<a href="{{ url_for('index') }}">← タスク一覧に戻る</a>
+{% endblock %}
+
