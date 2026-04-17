@@ -5,7 +5,7 @@ from markupsafe import Markup
 
 
 app = Flask(__name__)
-app.secret_key = "secret"   # flash を使うために必要（改善点1）
+app.secret_key = "secret"
 
 # -----------------------------
 # DB 設定
@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 
 
 # -----------------------------
-# 共通関数（改善点2）
+# 共通関数
 # -----------------------------
 def parse_deadline(deadline_str):
     """YYYY-MM-DD を datetime に変換する共通関数"""
@@ -33,7 +33,7 @@ def highlight_keyword(text, keyword):
         f'<span class="highlight">{keyword}</span>'
     )
 
-    return Markup(highlighted)  # safe と同じ効果
+    return Markup(highlighted)
 # -----------------------------
 # モデル
 # -----------------------------
@@ -94,12 +94,11 @@ def create():
         deadline_str = request.form["deadline"]
         priority = int(request.form["priority"])
 
-        # バリデーション（改善点1）
         if not title or len(title) > 100:
             flash("タイトルは必須で100文字以内です")
             return redirect(url_for("create"))
 
-        deadline = parse_deadline(deadline_str)  # 改善点2
+        deadline = parse_deadline(deadline_str)
 
         new_task = Task(
             title=title,
@@ -116,7 +115,7 @@ def create():
 
 
 # -----------------------------
-# 編集（改善点1,2）
+# 編集
 # -----------------------------
 @app.route("/edit/<int:task_id>", methods=["GET", "POST"])
 def edit(task_id):
@@ -134,7 +133,7 @@ def edit(task_id):
 
         task.title = title
         task.priority = priority
-        task.deadline = parse_deadline(deadline_str)  # 改善点2
+        task.deadline = parse_deadline(deadline_str)
 
         db.session.commit()
         return redirect(url_for("index"))
@@ -161,15 +160,14 @@ def delete(task_id):
 
 
 # -----------------------------
-# 完了トグル（POST）改善点5
+# 完了トグル（POST）
 # -----------------------------
 @app.route("/toggle/<int:task_id>", methods=["POST"])
 def toggle(task_id):
     task = Task.query.get_or_404(task_id)
-    task.toggle()  # モデル側のメソッドを呼ぶ
+    task.toggle()
     db.session.commit()
     return redirect(url_for("index"))
-
 
 # -----------------------------
 # 検索（改善点3）
@@ -189,7 +187,6 @@ def search():
         Task.priority.asc()
     ).all()
 
-    # 🔥 ここでハイライトを適用
     for task in tasks:
         task.highlighted_title = highlight_keyword(task.title, keyword)
 
